@@ -76,6 +76,12 @@ public:
 
 	virtual btScalar addSingleResult(btCollisionWorld::LocalConvexResult& convexResult,bool normalInWorldSpace)
 	{
+		//for trigger filtering
+		if(!convexResult.m_hitCollisionObject->hasContactResponse())
+		{
+			return(btScalar(1.0));
+		}
+
 		if (convexResult.m_hitCollisionObject == m_me)
 			return btScalar(1.0);
 
@@ -137,6 +143,8 @@ btKinematicCharacterController::btKinematicCharacterController (btPairCachingGho
 	m_ghostObject = ghostObject;
 	m_up.setValue(0.0f, 0.0f, 1.0f);
 	m_jumpAxis.setValue(0.0f, 0.0f, 1.0f);
+	setUp(up);
+	setStepHeight(stepHeight);
 	m_addedMargin = 0.02;
 	m_walkDirection.setValue(0.0,0.0,0.0);
 	m_AngVel.setValue(0.0, 0.0, 0.0);
@@ -154,16 +162,13 @@ btKinematicCharacterController::btKinematicCharacterController (btPairCachingGho
 	m_wasOnGround = false;
 	m_wasJumping = false;
 	m_interpolateUp = true;
+	setMaxSlope(btRadians(45.0));
 	m_currentStepOffset = 0.0;
 	m_maxPenetrationDepth = 0.2;
 	full_drop = false;
 	bounce_fix = false;
 	m_linearDamping = btScalar(0.0);
 	m_angularDamping = btScalar(0.0);
-
-	setUp(up);
-	setStepHeight(stepHeight);
-	setMaxSlope(btRadians(45.0));
 }
 
 btKinematicCharacterController::~btKinematicCharacterController ()
@@ -204,6 +209,14 @@ bool btKinematicCharacterController::recoverFromPenetration ( btCollisionWorld* 
 		m_manifoldArray.resize(0);
 
 		btBroadphasePair* collisionPair = &m_ghostObject->getOverlappingPairCache()->getOverlappingPairArray()[i];
+
+		//for trigger filtering
+		if(!static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject)->hasContactResponse()
+		 || !static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject)->hasContactResponse()
+		)
+		{
+			continue;
+		}
 
 		btCollisionObject* obj0 = static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject);
         btCollisionObject* obj1 = static_cast<btCollisionObject*>(collisionPair->m_pProxy1->m_clientObject);
@@ -658,7 +671,7 @@ void btKinematicCharacterController::setLinearVelocity(const btVector3& velocity
 		if (c != 0)
 		{
 			//there is a component in walkdirection for vertical velocity
-			btVector3 upComponent = m_up * (btSin(SIMD_HALF_PI - btAcos(c)) * m_walkDirection.length());
+			btVector3 upComponent = m_up * (sinf(SIMD_HALF_PI - acosf(c)) * m_walkDirection.length());
 			m_walkDirection -= upComponent;
 			m_verticalVelocity = (c < 0.0f ? -1 : 1) * upComponent.length();
 			
@@ -961,10 +974,10 @@ void btKinematicCharacterController::setUp(const btVector3& up)
 		return;
 	}
 
-	setUpVector(up);
+	setUpVector(up, true);
 }
 
-void btKinematicCharacterController::setUpVector(const btVector3& up)
+void btKinematicCharacterController::setUpVector(const btVector3& up, bool skipGHost)
 {
 	if (m_up == up)
 		return;
@@ -976,7 +989,7 @@ void btKinematicCharacterController::setUpVector(const btVector3& up)
 	else
 		m_up = btVector3(0.0, 0.0, 0.0);
 
-	if (!m_ghostObject) return;
+	if(!m_ghostObject || skipGHost) return;
 	btQuaternion rot = getRotation(m_up, u);
 
 	//set orientation with new up

@@ -1,0 +1,31 @@
+﻿Build started 05.09.2017 9:02:30.
+     1>Project "F:\engine\sdks\bullet3\build3\vs2010\LinearMath.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\..\src /Zi /nologo /W3 /WX- /Od /Oy- /D "BULLET_EXPORTS=_declspec(dllexport)" /D _DEBUG=1 /D _MBCS /Gm- /EHsc /RTC1 /MTd /GS /Gy /fp:fast /Zc:wchar_t /Zc:forScope /Fo"obj\x32\Debug\LinearMath\\" /Fd"..\..\bin\LinearMath_vs2010_debug.pdb" /Gd /TP /analyze- /errorReport:prompt /MP /wd4244 /wd4267 ..\..\src\LinearMath\btAlignedAllocator.cpp ..\..\src\LinearMath\btConvexHull.cpp ..\..\src\LinearMath\btConvexHullComputer.cpp ..\..\src\LinearMath\btGeometryUtil.cpp ..\..\src\LinearMath\btPolarDecomposition.cpp ..\..\src\LinearMath\btQuickprof.cpp ..\..\src\LinearMath\btSerializer.cpp ..\..\src\LinearMath\btSerializer64.cpp ..\..\src\LinearMath\btThreads.cpp ..\..\src\LinearMath\btVector3.cpp
+         btAlignedAllocator.cpp
+         btConvexHull.cpp
+         btConvexHullComputer.cpp
+         btGeometryUtil.cpp
+         btPolarDecomposition.cpp
+         btQuickprof.cpp
+         btSerializer.cpp
+         btSerializer64.cpp
+         btThreads.cpp
+         btVector3.cpp
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"..\..\bin\LinearMath_vs2010_debug.lib" /NOLOGO /MACHINE:X86 obj\x32\Debug\LinearMath\btAlignedAllocator.obj
+         obj\x32\Debug\LinearMath\btConvexHull.obj
+         obj\x32\Debug\LinearMath\btConvexHullComputer.obj
+         obj\x32\Debug\LinearMath\btGeometryUtil.obj
+         obj\x32\Debug\LinearMath\btPolarDecomposition.obj
+         obj\x32\Debug\LinearMath\btQuickprof.obj
+         obj\x32\Debug\LinearMath\btSerializer.obj
+         obj\x32\Debug\LinearMath\btSerializer64.obj
+         obj\x32\Debug\LinearMath\btThreads.obj
+         obj\x32\Debug\LinearMath\btVector3.obj
+         LinearMath.vcxproj -> F:\engine\sdks\bullet3\build3\vs2010\..\..\bin\LinearMath_vs2010_debug.lib
+     1>Done Building Project "F:\engine\sdks\bullet3\build3\vs2010\LinearMath.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:15.67

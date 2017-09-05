@@ -1,0 +1,29 @@
+﻿Build started 12.06.2017 14:52:15.
+     1>Project "F:\engine\sdks\bullet3\build3\vs2010\LinearMath.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\..\src /nologo /W3 /WX- /Ox /Oy- /D "BULLET_EXPORTS=_declspec(dllexport)" /GF /Gm- /EHsc /MT /GS /Gy /arch:SSE2 /fp:fast /Zc:wchar_t /Zc:forScope /Fo"obj\x32\Release\LinearMath\\" /Fd"obj\x32\Release\LinearMath\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt /MP /wd4244 /wd4267 ..\..\src\LinearMath\btAlignedAllocator.cpp ..\..\src\LinearMath\btConvexHull.cpp ..\..\src\LinearMath\btConvexHullComputer.cpp ..\..\src\LinearMath\btGeometryUtil.cpp ..\..\src\LinearMath\btPolarDecomposition.cpp ..\..\src\LinearMath\btQuickprof.cpp ..\..\src\LinearMath\btSerializer.cpp ..\..\src\LinearMath\btThreads.cpp ..\..\src\LinearMath\btVector3.cpp
+         btAlignedAllocator.cpp
+         btConvexHull.cpp
+         btConvexHullComputer.cpp
+         btGeometryUtil.cpp
+         btPolarDecomposition.cpp
+         btQuickprof.cpp
+         btSerializer.cpp
+         btThreads.cpp
+         btVector3.cpp
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"..\..\bin\LinearMath_vs2010.lib" /NOLOGO /MACHINE:X86 obj\x32\Release\LinearMath\btAlignedAllocator.obj
+         obj\x32\Release\LinearMath\btConvexHull.obj
+         obj\x32\Release\LinearMath\btConvexHullComputer.obj
+         obj\x32\Release\LinearMath\btGeometryUtil.obj
+         obj\x32\Release\LinearMath\btPolarDecomposition.obj
+         obj\x32\Release\LinearMath\btQuickprof.obj
+         obj\x32\Release\LinearMath\btSerializer.obj
+         obj\x32\Release\LinearMath\btThreads.obj
+         obj\x32\Release\LinearMath\btVector3.obj
+         LinearMath.vcxproj -> F:\engine\sdks\bullet3\build3\vs2010\..\..\bin\LinearMath_vs2010.lib
+     1>Done Building Project "F:\engine\sdks\bullet3\build3\vs2010\LinearMath.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:32.89

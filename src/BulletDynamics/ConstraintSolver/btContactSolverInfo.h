@@ -66,7 +66,7 @@ struct btContactSolverInfoData
 
 };
 
-struct btContactSolverInfo : public btContactSolverInfoData
+struct BULLET_EXPORTS btContactSolverInfo : public btContactSolverInfoData
 {
 
 	

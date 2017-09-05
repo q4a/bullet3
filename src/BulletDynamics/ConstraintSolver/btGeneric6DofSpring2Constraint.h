@@ -66,7 +66,7 @@ enum RotateOrder
 	RO_ZYX
 };
 
-class btRotationalLimitMotor2
+class BULLET_EXPORTS btRotationalLimitMotor2
 {
 public:
 // upper < lower means free
@@ -162,7 +162,7 @@ public:
 
 
 
-class btTranslationalLimitMotor2
+class BULLET_EXPORTS btTranslationalLimitMotor2
 {
 public:
 // upper < lower means free
@@ -274,7 +274,7 @@ enum bt6DofFlags2
 #define BT_6DOF_FLAGS_AXIS_SHIFT2 4 // bits per axis
 
 
-ATTRIBUTE_ALIGNED16(class) btGeneric6DofSpring2Constraint : public btTypedConstraint
+ATTRIBUTE_ALIGNED16(class) BULLET_EXPORTS btGeneric6DofSpring2Constraint : public btTypedConstraint
 {
 protected:
 
