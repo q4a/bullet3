@@ -15,7 +15,6 @@ IF(COMMAND cmake_policy)
    endif(POLICY CMP0042)
 ENDIF(COMMAND cmake_policy)
 
-
 IF (NOT CMAKE_BUILD_TYPE)
 # SET(CMAKE_BUILD_TYPE "Debug")
  SET(CMAKE_BUILD_TYPE "Release")
@@ -37,6 +36,23 @@ IF (BULLET2_USE_THREAD_LOCKS)
         OPTION(BULLET2_USE_PPL_MULTITHREADING "Build Bullet 2 with support for multi-threading with Microsoft Parallel Patterns Library (requires MSVC compiler)" OFF)
     ENDIF (MSVC)
 ENDIF (BULLET2_USE_THREAD_LOCKS)
+
+
+IF(NOT WIN32)
+	SET(DL ${CMAKE_DL_LIBS})
+	IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		MESSAGE("Linux")
+		SET(OSDEF -D_LINUX)
+	ELSE(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		IF(APPLE)
+			MESSAGE("Apple")
+			SET(OSDEF -D_DARWIN)
+		ELSE(APPLE)
+			MESSAGE("BSD?")
+			SET(OSDEF -D_BSD)
+		ENDIF(APPLE)
+	ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+ENDIF(NOT WIN32)
 
 OPTION(USE_MSVC_INCREMENTAL_LINKING "Use MSVC Incremental Linking" OFF)
 OPTION(USE_CUSTOM_VECTOR_MATH "Use custom vectormath library" OFF)
@@ -285,14 +301,13 @@ IF (APPLE)
 ENDIF()
 
 OPTION(BUILD_BULLET3 "Set when you want to build Bullet 3" ON)
-
 # Optional Python configuration
 # builds pybullet automatically if all the requirements are met
-SET(PYTHON_VERSION_PYBULLET "2.7" CACHE STRING "Python version pybullet will use.")
-SET(Python_ADDITIONAL_VERSIONS 2.7 2.7.3 3 3.0 3.1 3.2 3.3 3.4 3.5 3.6)
+SET(PYTHON_VERSION_PYBULLET "" CACHE STRING "Python version pybullet will use.")
+SET(Python_ADDITIONAL_VERSIONS 3 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.7.12 2.7.10 2.7.3 )
 SET_PROPERTY(CACHE PYTHON_VERSION_PYBULLET PROPERTY STRINGS ${Python_ADDITIONAL_VERSIONS})
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build3/cmake ${CMAKE_MODULE_PATH})
-OPTION(EXACT_PYTHON_VERSION "Require Python and match PYTHON_VERSION_PYBULLET exactly, e.g. 2.7.3" OFF)
+OPTION(EXACT_PYTHON_VERSION "Require Python and match PYTHON_VERSION_PYBULLET exactly, e.g. 2.7.12" OFF)
 IF(EXACT_PYTHON_VERSION)
   set(EXACT_PYTHON_VERSION_FLAG EXACT REQUIRED)
 ENDIF(EXACT_PYTHON_VERSION)
@@ -311,8 +326,9 @@ OPTION(BUILD_CLSOCKET "Set when you want to build apps with enet TCP networking 
 
 
 IF(BUILD_PYBULLET)
+	FIND_PACKAGE(PythonLibs)
 
-	OPTION(BUILD_PYBULLET_NUMPY "Set when you want to build pybullet with NumPy support" ON)
+	OPTION(BUILD_PYBULLET_NUMPY "Set when you want to build pybullet with NumPy support" OFF)
 	OPTION(BUILD_PYBULLET_ENET "Set when you want to build pybullet with enet UDP networking support" ON)
 	OPTION(BUILD_PYBULLET_CLSOCKET "Set when you want to build pybullet with enet TCP networking support" ON)
 
@@ -392,7 +408,6 @@ IF(BUILD_EXTRAS)
 ENDIF(BUILD_EXTRAS)
 
 
-#Maya Dynamica plugin is moved to http://dynamica.googlecode.com
 
 SUBDIRS(src)
 
@@ -407,7 +422,15 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+
 IF(INSTALL_LIBS)
+	#INSTALL of other files requires CMake 2.6
+	IF(BUILD_EXTRAS)
+		IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.5)
+			OPTION(INSTALL_EXTRA_LIBS "Set when you want extra libraries installed" ON)
+		ENDIF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.5)
+	ENDIF(BUILD_EXTRAS)
+
 	SET (LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
 	SET (LIB_DESTINATION "lib${LIB_SUFFIX}" CACHE STRING "Library directory name")
 	## the following are directories where stuff will be installed to
@@ -421,12 +444,8 @@ IF(INSTALL_LIBS)
 		DESTINATION
 		${PKGCONFIG_INSTALL_PREFIX})
 	ENDIF(NOT MSVC)
-ENDIF(INSTALL_LIBS)
+ENDIF()
 
-#INSTALL of other files requires CMake 2.6
-IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.5)
-	OPTION(INSTALL_EXTRA_LIBS "Set when you want extra libraries installed" OFF)
-ENDIF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.5)
 
 OPTION(BUILD_UNIT_TESTS "Build Unit Tests"	ON)
 
@@ -437,9 +456,8 @@ ENDIF()
 
 set (BULLET_CONFIG_CMAKE_PATH lib${LIB_SUFFIX}/cmake/bullet )
 list (APPEND BULLET_LIBRARIES LinearMath)
-IF(BUILD_BULLET3)
-    list (APPEND BULLET_LIBRARIES BulletInverseDynamics)
-ENDIF(BUILD_BULLET3)
+list (APPEND BULLET_LIBRARIES Bullet3Common)
+list (APPEND BULLET_LIBRARIES BulletInverseDynamics)
 list (APPEND BULLET_LIBRARIES BulletCollision)
 list (APPEND BULLET_LIBRARIES BulletDynamics)
 list (APPEND BULLET_LIBRARIES BulletSoftBody)
@@ -448,7 +466,11 @@ configure_file 	( ${CMAKE_CURRENT_SOURCE_DIR}/BulletConfig.cmake.in
 					${CMAKE_CURRENT_BINARY_DIR}/BulletConfig.cmake
 					@ONLY ESCAPE_QUOTES
 				)
-install ( FILES ${CMAKE_CURRENT_SOURCE_DIR}/UseBullet.cmake
+OPTION(INSTALL_CMAKE_FILES "Install generated CMake files" ON)
+
+IF (INSTALL_CMAKE_FILES)
+	install ( FILES ${CMAKE_CURRENT_SOURCE_DIR}/UseBullet.cmake
 		${CMAKE_CURRENT_BINARY_DIR}/BulletConfig.cmake
 		DESTINATION ${BULLET_CONFIG_CMAKE_PATH}
 	)
+ENDIF (INSTALL_CMAKE_FILES)

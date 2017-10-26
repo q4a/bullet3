@@ -35,12 +35,6 @@ static btScalar gUrdfDefaultCollisionMargin = 0.001;
 #include <list>
 #include "UrdfParser.h"
 
-struct MyTexture
-{
-	int m_width;
-	int m_height;
-	unsigned char* textureData;
-};
 
 
 ATTRIBUTE_ALIGNED16(struct) BulletURDFInternalData
@@ -57,6 +51,7 @@ ATTRIBUTE_ALIGNED16(struct) BulletURDFInternalData
 	mutable btAlignedObjectArray<btTriangleMesh*> m_allocatedMeshInterfaces;
 	
 	LinkVisualShapesConverter* m_customVisualShapesConverter;
+	bool m_enableTinyRenderer;
 
 	void setSourceFile(const std::string& relativeFileName, const std::string& prefix)
 	{
@@ -68,6 +63,7 @@ ATTRIBUTE_ALIGNED16(struct) BulletURDFInternalData
 
 	BulletURDFInternalData()
 	{
+		m_enableTinyRenderer = true;
 		m_pathPrefix[0] = 0;
 	}
 
@@ -818,7 +814,7 @@ upAxisMat.setIdentity();
 }
 
 
-static void convertURDFToVisualShapeInternal(const UrdfVisual* visual, const char* urdfPathPrefix, const btTransform& visualTransform, btAlignedObjectArray<GLInstanceVertex>& verticesOut, btAlignedObjectArray<int>& indicesOut, btAlignedObjectArray<MyTexture>& texturesOut)
+void BulletURDFImporter::convertURDFToVisualShapeInternal(const UrdfVisual* visual, const char* urdfPathPrefix, const btTransform& visualTransform, btAlignedObjectArray<GLInstanceVertex>& verticesOut, btAlignedObjectArray<int>& indicesOut, btAlignedObjectArray<BulletURDFTexture>& texturesOut) const
 {
 	BT_PROFILE("convertURDFToVisualShapeInternal");
 
@@ -882,12 +878,13 @@ static void convertURDFToVisualShapeInternal(const UrdfVisual* visual, const cha
 					if (b3ImportMeshUtility::loadAndRegisterMeshFromFileInternal(visual->m_geometry.m_meshFileName, meshData))
 					{
 
-						if (meshData.m_textureImage)
+						if (meshData.m_textureImage1)
 						{
-							MyTexture texData;
+							BulletURDFTexture texData;
 							texData.m_width = meshData.m_textureWidth;
 							texData.m_height = meshData.m_textureHeight;
-							texData.textureData = meshData.m_textureImage;
+							texData.textureData1 = meshData.m_textureImage1;
+							texData.m_isCached = meshData.m_isCached;
 							texturesOut.push_back(texData);
 						}
 						glmesh = meshData.m_gfxShape;
@@ -1099,7 +1096,7 @@ int BulletURDFImporter::convertLinkVisualShapes(int linkIndex, const char* pathP
     btAlignedObjectArray<GLInstanceVertex> vertices;
 	btAlignedObjectArray<int> indices;
 	btTransform startTrans; startTrans.setIdentity();
-	btAlignedObjectArray<MyTexture> textures;
+	btAlignedObjectArray<BulletURDFTexture> textures;
 	
     const UrdfModel& model = m_data->m_urdfParser.getModel();
 	UrdfLink* const* linkPtr = model.m_links.getAtIndex(linkIndex);
@@ -1141,9 +1138,12 @@ int BulletURDFImporter::convertLinkVisualShapes(int linkIndex, const char* pathP
 			if (textures.size())
 			{
 				
-				textureIndex = m_data->m_guiHelper->registerTexture(textures[0].textureData,textures[0].m_width,textures[0].m_height);
+				textureIndex = m_data->m_guiHelper->registerTexture(textures[0].textureData1,textures[0].m_width,textures[0].m_height);
 			}
-			graphicsIndex = m_data->m_guiHelper->registerGraphicsShape(&vertices[0].xyzw[0], vertices.size(), &indices[0], indices.size(),B3_GL_TRIANGLES,textureIndex);
+			{
+				B3_PROFILE("registerGraphicsShape");
+				graphicsIndex = m_data->m_guiHelper->registerGraphicsShape(&vertices[0].xyzw[0], vertices.size(), &indices[0], indices.size(), B3_GL_TRIANGLES, textureIndex);
+			}
 			
 		}
 	}
@@ -1151,7 +1151,11 @@ int BulletURDFImporter::convertLinkVisualShapes(int linkIndex, const char* pathP
 	//delete textures
 	for (int i=0;i<textures.size();i++)
 	{
-		free( textures[i].textureData);
+		B3_PROFILE("free textureData");
+		if (!textures[i].m_isCached)
+		{
+			free( textures[i].textureData1);
+		}
 	}
 	return graphicsIndex;
 }
@@ -1206,10 +1210,15 @@ bool BulletURDFImporter::getLinkAudioSource(int linkIndex, SDFAudioSource& audio
 	return false;
 }
 
+void BulletURDFImporter::setEnableTinyRenderer(bool enable)
+{
+	m_data->m_enableTinyRenderer = enable;
+}
+
 
 void BulletURDFImporter::convertLinkVisualShapes2(int linkIndex, int urdfIndex, const char* pathPrefix, const btTransform& localInertiaFrame, class btCollisionObject* colObj, int bodyUniqueId) const
 {
-  	if (m_data->m_customVisualShapesConverter)
+  	if (m_data->m_enableTinyRenderer && m_data->m_customVisualShapesConverter)
 	{
 		const UrdfModel& model = m_data->m_urdfParser.getModel();
 		UrdfLink*const* linkPtr = model.m_links.getAtIndex(urdfIndex);

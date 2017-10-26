@@ -13,7 +13,7 @@ class MJCFBasedRobot:
 	Base class for mujoco .xml based agents.
 	"""
 
-	self_collision = False
+	self_collision = True
 
 	def __init__(self, model_xml, robot_name, action_dim, obs_dim):
 		self.parts = None
@@ -53,6 +53,7 @@ class MJCFBasedRobot:
 				part_name = part_name.decode("utf8")
 				parts[part_name] = BodyPart(part_name, bodies, i, -1)
 			for j in range(p.getNumJoints(bodies[i])):
+				p.setJointMotorControl2(bodies[i],j,p.POSITION_CONTROL,positionGain=0.1,velocityGain=0.1,force=0)
 				_,joint_name,_,_,_,_,_,_,_,_,_,_,part_name = p.getJointInfo(bodies[i], j)
 
 				joint_name = joint_name.decode("utf8")
@@ -87,7 +88,7 @@ class MJCFBasedRobot:
 
 		if self.self_collision:
 			self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(
-				p.loadMJCF(os.path.join(pybullet_data.getDataPath(),"mjcf", self.model_xml), flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS))
+				p.loadMJCF(os.path.join(pybullet_data.getDataPath(),"mjcf", self.model_xml), flags=p.URDF_USE_SELF_COLLISION+p.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS))
 		else:
 			self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(
 				p.loadMJCF(os.path.join(pybullet_data.getDataPath(),"mjcf", self.model_xml)))
@@ -209,4 +210,4 @@ class Joint:
 		self.disable_motor()
 
 	def disable_motor(self):
-		p.setJointMotorControl2(self.bodies[self.bodyIndex],self.jointIndex,controlMode=p.VELOCITY_CONTROL, force=0)
+		p.setJointMotorControl2(self.bodies[self.bodyIndex],self.jointIndex,controlMode=p.POSITION_CONTROL, targetPosition=0, targetVelocity=0, positionGain=0.1, velocityGain=0.1, force=0)

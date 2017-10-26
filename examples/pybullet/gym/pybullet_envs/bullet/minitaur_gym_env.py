@@ -19,6 +19,7 @@ from . import bullet_client
 from . import minitaur
 import os
 import pybullet_data
+from . import minitaur_env_randomizer
 
 NUM_SUBSTEPS = 5
 NUM_MOTORS = 8
@@ -68,7 +69,7 @@ class MinitaurBulletEnv(gym.Env):
                on_rack=False,
                render=False,
                kd_for_pd_controllers=0.3,
-               env_randomizer=None):
+               env_randomizer=minitaur_env_randomizer.MinitaurEnvRandomizer()):
     """Initialize the minitaur gym environment.
 
     Args:
@@ -165,6 +166,9 @@ class MinitaurBulletEnv(gym.Env):
 
   def set_env_randomizer(self, env_randomizer):
     self._env_randomizer = env_randomizer
+
+  def configure(self, args):
+    self._args = args
 
   def _reset(self):
     if self._hard_reset:
@@ -275,7 +279,7 @@ class MinitaurBulletEnv(gym.Env):
         nearVal=0.1, farVal=100.0)
     (_, _, px, _, _) = self._pybullet_client.getCameraImage(
         width=RENDER_WIDTH, height=RENDER_HEIGHT, viewMatrix=view_matrix,
-        projectionMatrix=proj_matrix)
+        projectionMatrix=proj_matrix, renderer=pybullet.ER_BULLET_HARDWARE_OPENGL)
     rgb_array = np.array(px)
     rgb_array = rgb_array[:, :, :3]
     return rgb_array

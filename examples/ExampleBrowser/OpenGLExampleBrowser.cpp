@@ -377,6 +377,13 @@ void OpenGLExampleBrowser::registerFileImporter(const char* extension, CommonExa
 
 void OpenGLExampleBrowserVisualizerFlagCallback(int flag, bool enable)
 {
+	if (flag == COV_ENABLE_Y_AXIS_UP)
+	{
+		//either Y = up or Z
+		int upAxis = enable? 1:2;
+		s_app->setUpAxis(upAxis);
+	}
+
 	if (flag == COV_ENABLE_RENDERING)
 	{
 		gEnableRenderLoop = (enable!=0);
@@ -909,7 +916,7 @@ bool OpenGLExampleBrowser::init(int argc, char* argv[])
 
 #ifndef NO_OPENGL3
     SimpleOpenGL3App* simpleApp=0;
-	sUseOpenGL2 =args.CheckCmdLineFlag("opengl2");
+    sUseOpenGL2 = args.CheckCmdLineFlag("opengl2");
 #else
 	sUseOpenGL2 = true;
 #endif
@@ -920,10 +927,16 @@ bool OpenGLExampleBrowser::init(int argc, char* argv[])
 	const char* optMode = "Release build";
 #endif
 
+#ifdef B3_USE_GLFW
+	const char* glContext = "[glfw]";
+#else
+	const char* glContext = "[btgl]";
+#endif
+
     if (sUseOpenGL2 )
     {
 		char title[1024];
-		sprintf(title,"%s using limited OpenGL2 fallback. %s", appTitle,optMode);
+		sprintf(title,"%s using limited OpenGL2 fallback %s %s", appTitle,glContext, optMode);
         s_app = new SimpleOpenGL2App(title,width,height);
         s_app->m_renderer = new SimpleOpenGL2Renderer(width,height);
     } 
@@ -932,7 +945,7 @@ bool OpenGLExampleBrowser::init(int argc, char* argv[])
 	else
     {
 		char title[1024];
-		sprintf(title,"%s using OpenGL3+. %s", appTitle,optMode);
+		sprintf(title,"%s using OpenGL3+ %s %s", appTitle,glContext, optMode);
         simpleApp = new SimpleOpenGL3App(title,width,height, gAllowRetina);
         s_app = simpleApp;
     }
@@ -1001,7 +1014,7 @@ bool OpenGLExampleBrowser::init(int argc, char* argv[])
 		
 		if (sUseOpenGL2)
 		{
-			m_internalData->m_gwenRenderer = new Gwen::Renderer::OpenGL_DebugFont();
+			m_internalData->m_gwenRenderer = new Gwen::Renderer::OpenGL_DebugFont(s_window->getRetinaScale());
 		}
 #ifndef NO_OPENGL3
 		else
@@ -1204,10 +1217,13 @@ void OpenGLExampleBrowser::updateGraphics()
 
 void OpenGLExampleBrowser::update(float deltaTime)
 {
-	if (!gEnableRenderLoop)
-		return;
+    b3ChromeUtilsEnableProfiling();
 
-	b3ChromeUtilsEnableProfiling();
+    if (!gEnableRenderLoop)
+    {
+        sCurrentDemo->updateGraphics();
+		return;
+    }
 	
 		B3_PROFILE("OpenGLExampleBrowser::update");
 		assert(glGetError()==GL_NO_ERROR);
@@ -1338,7 +1354,7 @@ void OpenGLExampleBrowser::update(float deltaTime)
 			if (sUseOpenGL2)
 			{
 
-				saveOpenGLState(s_instancingRenderer->getScreenWidth(), s_instancingRenderer->getScreenHeight());
+				saveOpenGLState(s_instancingRenderer->getScreenWidth()*s_window->getRetinaScale(), s_instancingRenderer->getScreenHeight()*s_window->getRetinaScale());
 			}
 			
 			if (m_internalData->m_gui)

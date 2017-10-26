@@ -5,6 +5,14 @@
 
 #include "LinkVisualShapesConverter.h"
 
+struct BulletURDFTexture
+{
+	int m_width;
+	int m_height;
+	unsigned char* textureData1;
+	bool m_isCached;
+};
+
 
 ///BulletURDFImporter can deal with URDF and (soon) SDF files
 class BulletURDFImporter : public URDFImporterInterface
@@ -73,6 +81,10 @@ public:
 
 	virtual int getNumAllocatedMeshInterfaces() const;
 	virtual class btStridingMeshInterface* getAllocatedMeshInterface(int index);
+
+	virtual void setEnableTinyRenderer(bool enable);
+	void convertURDFToVisualShapeInternal(const struct UrdfVisual* visual, const char* urdfPathPrefix, const class btTransform& visualTransform, btAlignedObjectArray<struct GLInstanceVertex>& verticesOut, btAlignedObjectArray<int>& indicesOut, btAlignedObjectArray<struct BulletURDFTexture>& texturesOut) const;
+
 
 };
 

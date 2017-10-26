@@ -48,9 +48,11 @@ def main():
         obs = env.reset()
      
         while 1:
-            time.sleep(0.001)
+            time.sleep(0.01)
             a = pi.act(obs)
             obs, r, done, _ = env.step(a)
+            #print("reward")
+            #print(r)
             score += r
             frame += 1
             distance=5

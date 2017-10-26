@@ -9,7 +9,8 @@ class WalkerBase(MJCFBasedRobot):
 		self.camera_x = 0
 		self.walk_target_x = 1e3  # kilometer away
 		self.walk_target_y = 0
-
+		self.body_xyz=[0,0,0]
+	
 	def robot_specific_reset(self):
 		for j in self.ordered_joints:
 			j.reset_current_position(self.np_random.uniform(low=-0.1, high=0.1), 0)
@@ -62,6 +63,16 @@ class WalkerBase(MJCFBasedRobot):
 	def calc_potential(self):
 		# progress in potential field is speed*dt, typical speed is about 2-3 meter per second, this potential will change 2-3 per frame (not per second),
 		# all rewards have rew/frame units and close to 1.0
+		debugmode=0
+		if (debugmode):
+			print("calc_potential: self.walk_target_dist")
+			print(self.walk_target_dist)
+			print("self.scene.dt")
+			print(self.scene.dt)
+			print("self.scene.frame_skip")
+			print(self.scene.frame_skip)
+			print("self.scene.timestep")
+			print(self.scene.timestep)
 		return - self.walk_target_dist / self.scene.dt
 
 
@@ -114,7 +125,7 @@ class Ant(WalkerBase):
 	foot_list = ['front_left_foot', 'front_right_foot', 'left_back_foot', 'right_back_foot']
 
 	def __init__(self):
-		WalkerBase.__init__(self, "ant.xml", "torso", action_dim=8, obs_dim=28, power=10.5)
+		WalkerBase.__init__(self, "ant.xml", "torso", action_dim=8, obs_dim=28, power=2.5)
 
 	def alive_bonus(self, z, pitch):
 		return +1 if z > 0.26 else -1  # 0.25 is central sphere rad, die if it scrapes the ground
@@ -141,23 +152,25 @@ class Humanoid(WalkerBase):
 		self.motor_names += ["left_shoulder1", "left_shoulder2", "left_elbow"]
 		self.motor_power += [75, 75, 75]
 		self.motors = [self.jdict[n] for n in self.motor_names]
-		# if self.random_yaw: # TODO: Make leaning work as soon as the rest works
-		# 	cpose = cpp_household.Pose()
-		# 	yaw = self.np_random.uniform(low=-3.14, high=3.14)
-		# 	if self.random_lean and self.np_random.randint(2)==0:
-		# 		cpose.set_xyz(0, 0, 1.4)
-		# 		if self.np_random.randint(2)==0:
-		# 			pitch = np.pi/2
-		# 			cpose.set_xyz(0, 0, 0.45)
-		# 		else:
-		# 			pitch = np.pi*3/2
-		# 			cpose.set_xyz(0, 0, 0.25)
-		# 		roll = 0
-		# 		cpose.set_rpy(roll, pitch, yaw)
-		# 	else:
-		# 		cpose.set_xyz(0, 0, 1.4)
-		# 		cpose.set_rpy(0, 0, yaw)  # just face random direction, but stay straight otherwise
-		# 	self.cpp_robot.set_pose_and_speed(cpose, 0,0,0)
+		if self.random_yaw:
+			position = [0,0,0]
+			orientation = [0,0,0]
+			yaw = self.np_random.uniform(low=-3.14, high=3.14)
+			if self.random_lean and self.np_random.randint(2)==0:
+				cpose.set_xyz(0, 0, 1.4)
+				if self.np_random.randint(2)==0:
+					pitch = np.pi/2
+					position = [0, 0, 0.45]
+				else:
+					pitch = np.pi*3/2
+					position = [0, 0, 0.25]
+				roll = 0
+				orientation = [roll, pitch, yaw]
+			else:
+				position = [0, 0, 1.4]
+				orientation = [0, 0, yaw]  # just face random direction, but stay straight otherwise
+			self.robot_body.reset_position(position)
+			self.robot_body.reset_orientation(orientation)
 		self.initial_z = 0.8
 
 	random_yaw = False
