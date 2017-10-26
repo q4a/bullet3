@@ -499,6 +499,10 @@ void btKinematicCharacterController::stepDown ( btCollisionWorld* collisionWorld
 		downVelocity = m_fallSpeed;
 
 	btVector3 step_drop = m_up * (m_currentStepOffset + downVelocity);
+	if(step_drop.length2() < SIMD_EPSILON)
+	{
+		return;
+	}
 	m_targetPosition -= step_drop;
 
 	btKinematicClosestNotMeConvexResultCallback callback(m_ghostObject, m_up, m_maxSlopeCosine);
