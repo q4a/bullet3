@@ -1,9 +1,0 @@
-﻿Build started 28.05.2017 14:03:28.
-     1>Project "F:\engine\sdks\bullet3\build3\vs2010\Bullet3Collision.vcxproj" on node 4 (Build target(s)).
-     1>Lib:
-         Bullet3Collision.vcxproj -> F:\engine\sdks\bullet3\build3\vs2010\..\..\bin\Bullet3Collision_vs2010_debug.lib
-     1>Done Building Project "F:\engine\sdks\bullet3\build3\vs2010\Bullet3Collision.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:01.50

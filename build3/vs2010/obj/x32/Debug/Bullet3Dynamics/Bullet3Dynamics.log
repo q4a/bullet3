@@ -1,9 +1,0 @@
-﻿Build started 28.05.2017 14:03:14.
-     1>Project "F:\engine\sdks\bullet3\build3\vs2010\Bullet3Dynamics.vcxproj" on node 3 (Build target(s)).
-     1>Lib:
-         Bullet3Dynamics.vcxproj -> F:\engine\sdks\bullet3\build3\vs2010\..\..\bin\Bullet3Dynamics_vs2010_debug.lib
-     1>Done Building Project "F:\engine\sdks\bullet3\build3\vs2010\Bullet3Dynamics.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:00.18
