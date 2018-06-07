@@ -185,6 +185,8 @@ void	btCollisionWorld::updateSingleAabb(btCollisionObject* colObj)
 			m_debugDrawer->reportErrorWarning("If you can reproduce this, please email bugs@continuousphysics.com\n");
 			m_debugDrawer->reportErrorWarning("Please include above information, your Platform, version of OS.\n");
 			m_debugDrawer->reportErrorWarning("Thanks.\n");
+			m_debugDrawer->reportErrorWarning("@@@obj");
+			m_debugDrawer->reportErrorWarning((const char*)colObj);
 		}
 	}
 }
