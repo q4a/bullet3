@@ -48,6 +48,7 @@ subject to the following restrictions:
 #include "LinearMath/btMotionState.h"
 
 #include "LinearMath/btSerializer.h"
+#include "LinearMath/btSerializer.h"
 
 #if 0
 btAlignedObjectArray<btVector3> debugContacts;
@@ -402,7 +403,6 @@ int	btDiscreteDynamicsWorld::stepSimulation( btScalar timeStep,int maxSubSteps, 
 {
 	startProfiling(timeStep);
 
-
 	int numSimulationSubSteps = 0;
 
 	if (maxSubSteps)
@@ -466,7 +466,7 @@ int	btDiscreteDynamicsWorld::stepSimulation( btScalar timeStep,int maxSubSteps, 
 #ifndef BT_NO_PROFILE
 	CProfileManager::Increment_Frame_Counter();
 #endif //BT_NO_PROFILE
-
+	
 	return numSimulationSubSteps;
 }
 

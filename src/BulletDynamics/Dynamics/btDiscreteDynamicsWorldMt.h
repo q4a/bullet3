@@ -84,7 +84,7 @@ private:
 ///     - integrateTransforms
 ///     - createPredictiveContacts
 ///
-ATTRIBUTE_ALIGNED16(class) btDiscreteDynamicsWorldMt : public btDiscreteDynamicsWorld
+ATTRIBUTE_ALIGNED16(class) BULLET_EXPORTS btDiscreteDynamicsWorldMt : public btDiscreteDynamicsWorld
 {
 protected:
     btConstraintSolver* m_constraintSolverMt;

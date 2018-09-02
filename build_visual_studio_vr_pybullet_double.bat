@@ -1,9 +1,8 @@
 IF NOT EXIST bin mkdir bin
 IF NOT EXIST bin\openvr_api.dll  copy examples\ThirdPartyLibs\openvr\bin\win32\openvr_api.dll bin
-IF NOT EXIST bin\openvr64pi.dll  copy examples\ThirdPartyLibs\openvr\bin\win64\openvr_api.dll bin\openvr64pi.dll
 
-#aargh, see https://github.com/ValveSoftware/openvr/issues/412
-
+#optionally, hardcode the python path or
+#SET myvar=c:\python-3.5.3
 
 #find a python version (hopefully just 1) and use this
 dir c:\python* /b /ad > tmp1234.txt
@@ -22,5 +21,6 @@ premake4  --double --enable_multithreading --midi --enable_static_vr_plugin --en
 
 #premake4  --serial --audio --double --midi --enable_openvr --enable_pybullet --python_include_dir="%myvar%/include" --python_lib_dir="%myvar%/libs"   --targetdir="../bin" vs2010 
 
+#premake4   --double --midi --enable_openvr --enable_pybullet --python_include_dir="%myvar%/include" --python_lib_dir="%myvar%/libs"   --targetdir="../bin" vs2010 
 start vs2010
 
