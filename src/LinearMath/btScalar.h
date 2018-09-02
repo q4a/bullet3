@@ -774,7 +774,7 @@ SIMD_FORCE_INLINE btScalar btNormalizeAngle(btScalar angleInRadians)
 }
 
 ///rudimentary class to provide type info
-struct btTypedObject
+struct BULLET_EXPORTS btTypedObject
 {
 	btTypedObject(int objectType)
 		: m_objectType(objectType)

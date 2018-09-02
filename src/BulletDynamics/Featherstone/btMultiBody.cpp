@@ -116,11 +116,11 @@ btMultiBody::btMultiBody(int n_links,
 		m_linearDamping(0.04f),
 		m_angularDamping(0.04f),
 		m_useGyroTerm(true),
-		m_maxAppliedImpulse(1000.f),
+			m_maxAppliedImpulse(1000.f),
 		m_maxCoordinateVelocity(100.f),
-		m_hasSelfCollision(true),		
+			m_hasSelfCollision(true),		
 		__posUpdated(false),
-		m_dofCount(0),
+			m_dofCount(0),
 		m_posVarCnt(0),
 		m_useRK4(false), 	
 		m_useGlobalVelocities(false),
@@ -781,7 +781,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
     // hhat is NOT stored for the base (but ahat is)    
 	btSpatialForceVector * h = (btSpatialForceVector *)(m_dofCount > 0 ? &m_vectorBuf[0] : 0);
 	btSpatialMotionVector * spatAcc = (btSpatialMotionVector *)v_ptr;
-	v_ptr += num_links * 2 + 2; 
+	v_ptr += num_links * 2 + 2;
 	//
     // Y_i, invD_i
     btScalar * invD = m_dofCount > 0 ? &m_realBuf[6 + m_dofCount] : 0;
@@ -970,9 +970,9 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 			- spatCoriolisAcc[i].dot(hDof);
 
 		}
- 		for(int dof = 0; dof < m_links[i].m_dofCount; ++dof)
-		{	
-			btScalar *D_row = &D[dof * m_links[i].m_dofCount];
+		for(int dof = 0; dof < m_links[i].m_dofCount; ++dof)
+		{
+			btScalar *D_row = &D[dof * m_links[i].m_dofCount];			
 			for(int dof2 = 0; dof2 < m_links[i].m_dofCount; ++dof2)
 			{
 				const btSpatialForceVector &hDof2 = h[m_links[i].m_dofOffset + dof2];
@@ -988,7 +988,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 			{
 				if (D[0]>=SIMD_EPSILON)
 				{
-					invDi[0] = 1.0f / D[0];
+				invDi[0] = 1.0f / D[0];
 				} else
 				{
 					invDi[0] = 0;
@@ -1278,8 +1278,8 @@ void btMultiBody::solveImatrix(const btVector3& rhs_top, const btVector3& rhs_bo
    
 	if ((m_baseInertia[0] >= SIMD_EPSILON) && (m_baseInertia[1] >= SIMD_EPSILON) && (m_baseInertia[2] >= SIMD_EPSILON))
 	{
-		result[0] = rhs_bot[0] / m_baseInertia[0];
-		result[1] = rhs_bot[1] / m_baseInertia[1];
+        result[0] = rhs_bot[0] / m_baseInertia[0];
+        result[1] = rhs_bot[1] / m_baseInertia[1];
         result[2] = rhs_bot[2] / m_baseInertia[2];
 	} else
 	{
@@ -1289,10 +1289,10 @@ void btMultiBody::solveImatrix(const btVector3& rhs_top, const btVector3& rhs_bo
 	}
 	if (m_baseMass>=SIMD_EPSILON)
 	{
-        	result[3] = rhs_top[0] / m_baseMass;
-        	result[4] = rhs_top[1] / m_baseMass;
-        	result[5] = rhs_top[2] / m_baseMass;
-	} else
+        result[3] = rhs_top[0] / m_baseMass;
+        result[4] = rhs_top[1] / m_baseMass;
+        result[5] = rhs_top[2] / m_baseMass;
+    } else 
 	{
 		result[3] = 0;
 		result[4] = 0;
@@ -1350,16 +1350,16 @@ void btMultiBody::solveImatrix(const btSpatialForceVector &rhs, btSpatialMotionV
 		// in the case of 0 m_links (i.e. a plain rigid body, not a multibody) rhs * invI is easier
 		if ((m_baseInertia[0] >= SIMD_EPSILON) && (m_baseInertia[1] >= SIMD_EPSILON) && (m_baseInertia[2] >= SIMD_EPSILON))
         	{
-			result.setAngular(rhs.getAngular() / m_baseInertia);       
+		result.setAngular(rhs.getAngular() / m_baseInertia);
         	} else  
         	{       
                 	result.setAngular(btVector3(0,0,0));
         	}
         	if (m_baseMass>=SIMD_EPSILON)
         	{       
-			result.setLinear(rhs.getLinear() / m_baseMass);               	 	
-        	} else  
-        	{       
+		result.setLinear(rhs.getLinear() / m_baseMass);		
+    } else 
+	{
                 	result.setLinear(btVector3(0,0,0));
         	}
     	} else 

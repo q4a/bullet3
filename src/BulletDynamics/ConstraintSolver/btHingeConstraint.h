@@ -48,7 +48,7 @@ enum btHingeFlags
 
 /// hinge constraint between two rigidbodies each with a pivotpoint that descibes the axis location in local space
 /// axis defines the orientation of the hinge axis
-ATTRIBUTE_ALIGNED16(class) btHingeConstraint : public btTypedConstraint
+ATTRIBUTE_ALIGNED16(class) BULLET_EXPORTS btHingeConstraint : public btTypedConstraint
 {
 #ifdef IN_PARALLELL_SOLVER
 public:

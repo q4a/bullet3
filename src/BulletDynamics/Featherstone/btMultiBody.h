@@ -707,13 +707,13 @@ private:
 	btScalar	m_maxCoordinateVelocity;
 	bool		m_hasSelfCollision;
 	
-	bool __posUpdated;
-	int m_dofCount, m_posVarCnt;
+		bool __posUpdated;
+		int m_dofCount, m_posVarCnt;
 
 	bool m_useRK4, m_useGlobalVelocities;
 	//for global velocities, see 8.3.2B Proposed resolution in Jakub Stepien PhD Thesis
 	//https://drive.google.com/file/d/0Bz3vEa19XOYGNWdZWGpMdUdqVmZ5ZVBOaEh4ZnpNaUxxZFNV/view?usp=sharing
-
+	
 	///the m_needsJointFeedback gets updated/computed during the stepVelocitiesMultiDof and it for internal usage only
 	bool m_internalNeedsJointFeedback;
 };
@@ -828,7 +828,7 @@ struct	btMultiBodyFloatData
 	char	*m_baseName;
 	btMultiBodyLinkFloatData	*m_links;
 	btCollisionObjectFloatData	*m_baseCollider;
-
+	
 };
 
 

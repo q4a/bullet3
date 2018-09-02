@@ -786,7 +786,7 @@ int	btSequentialImpulseConstraintSolver::getOrInitSolverBody(btCollisionObject& 
     {
 		bool isMultiBodyType = (body.getInternalType()&btCollisionObject::CO_FEATHERSTONE_LINK);
         // Incorrectly set collision object flags can degrade performance in various ways.
-		if (!isMultiBodyType)
+		if(!isMultiBodyType && !(body.getCollisionFlags() & btCollisionObject::CF_CHARACTER_OBJECT))
 		{
 			btAssert( body.isStaticOrKinematicObject() );
 		}
