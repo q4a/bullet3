@@ -32,9 +32,16 @@ bool btGjkEpaPenetrationDepthSolver::calcPenDepth(btSimplexSolverInterface& simp
 	(void)v;
 	(void)simplexSolver;
 
+	btVector3 BA = transformB.getOrigin() - transformA.getOrigin();
+	bool bSkipTwo = false;
+	if(BA.fuzzyZero())
+	{
+		bSkipTwo = true;
+	}
+
 	btVector3 guessVectors[] = {
-		btVector3(transformB.getOrigin() - transformA.getOrigin()).normalized(),
-		btVector3(transformA.getOrigin() - transformB.getOrigin()).normalized(),
+		bSkipTwo ? BA : BA.normalized(),
+		bSkipTwo ? BA : btVector3(transformA.getOrigin() - transformB.getOrigin()).normalized(),
 		btVector3(0, 0, 1),
 		btVector3(0, 1, 0),
 		btVector3(1, 0, 0),
@@ -46,7 +53,7 @@ bool btGjkEpaPenetrationDepthSolver::calcPenDepth(btSimplexSolverInterface& simp
 
 	int numVectors = sizeof(guessVectors) / sizeof(btVector3);
 
-	for (int i = 0; i < numVectors; i++)
+	for(int i = bSkipTwo ? 2 : 0; i < numVectors; i++)
 	{
 		simplexSolver.reset();
 		btVector3	guessVector = guessVectors[i];

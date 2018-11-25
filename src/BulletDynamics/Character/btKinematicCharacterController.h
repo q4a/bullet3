@@ -199,6 +199,8 @@ public:
 
 	bool onGround () const;
 	void setUpInterpolate (bool value);
+
+	bool canStandUp(float fDelta);
 };
 
 #endif // BT_KINEMATIC_CHARACTER_CONTROLLER_H

@@ -209,15 +209,7 @@ bool btKinematicCharacterController::recoverFromPenetration ( btCollisionWorld* 
 		m_manifoldArray.resize(0);
 
 		btBroadphasePair* collisionPair = &m_ghostObject->getOverlappingPairCache()->getOverlappingPairArray()[i];
-
-		//for trigger filtering
-		if(!static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject)->hasContactResponse()
-		 || !static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject)->hasContactResponse()
-		)
-		{
-			continue;
-		}
-
+		
 		btCollisionObject* obj0 = static_cast<btCollisionObject*>(collisionPair->m_pProxy0->m_clientObject);
         btCollisionObject* obj1 = static_cast<btCollisionObject*>(collisionPair->m_pProxy1->m_clientObject);
 
@@ -281,6 +273,11 @@ void btKinematicCharacterController::stepUp ( btCollisionWorld* world)
 
 	/* FIXME: Handle penetration properly */
 	start.setOrigin(m_currentPosition);
+
+	if(stepHeight <= 0.0f && m_verticalOffset <= 0.0f)
+	{
+		return;
+	}
 
 	m_targetPosition = m_currentPosition + m_up * (stepHeight) + m_jumpAxis * ((m_verticalOffset > 0.f ? m_verticalOffset : 0.f));
 	m_currentPosition = m_targetPosition;
@@ -473,6 +470,35 @@ void btKinematicCharacterController::stepForwardAndStrafe ( btCollisionWorld* co
             m_currentPosition = m_targetPosition;
 		}
 	}
+}
+
+bool btKinematicCharacterController::canStandUp(float fDelta)
+{
+	btTransform start, end;
+
+	start.setIdentity();
+	end.setIdentity();
+
+	start.setOrigin(m_currentPosition);
+	end.setOrigin(m_currentPosition + m_up * fDelta);
+
+	start.setRotation(m_currentOrientation);
+	end.setRotation(m_targetOrientation);
+
+	btKinematicClosestNotMeConvexResultCallback callback(m_ghostObject, -m_up, m_maxSlopeCosine);
+	callback.m_collisionFilterGroup = getGhostObject()->getBroadphaseHandle()->m_collisionFilterGroup;
+	callback.m_collisionFilterMask = getGhostObject()->getBroadphaseHandle()->m_collisionFilterMask;
+
+	m_ghostObject->convexSweepTest(m_convexShape, start, end, callback);
+
+	if(callback.hasHit() && m_ghostObject->hasContactResponse() && needsCollision(m_ghostObject, callback.m_hitCollisionObject))
+	{
+		if(callback.m_hitNormalWorld.dot(m_up) < 0.0)
+		{
+			return(false);
+		}
+	}
+	return(true);
 }
 
 void btKinematicCharacterController::stepDown ( btCollisionWorld* collisionWorld, btScalar dt)
