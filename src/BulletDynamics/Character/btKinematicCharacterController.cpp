@@ -486,8 +486,13 @@ bool btKinematicCharacterController::canStandUp(float fDelta)
 	end.setRotation(m_targetOrientation);
 
 	btKinematicClosestNotMeConvexResultCallback callback(m_ghostObject, -m_up, m_maxSlopeCosine);
-	callback.m_collisionFilterGroup = getGhostObject()->getBroadphaseHandle()->m_collisionFilterGroup;
-	callback.m_collisionFilterMask = getGhostObject()->getBroadphaseHandle()->m_collisionFilterMask;
+	btBroadphaseProxy *pProxy = getGhostObject()->getBroadphaseHandle();
+	if(!pProxy)
+	{
+		return(true);
+	}
+	callback.m_collisionFilterGroup = pProxy->m_collisionFilterGroup;
+	callback.m_collisionFilterMask = pProxy->m_collisionFilterMask;
 
 	m_ghostObject->convexSweepTest(m_convexShape, start, end, callback);
 
