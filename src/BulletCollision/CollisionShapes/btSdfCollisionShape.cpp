@@ -2,7 +2,7 @@
 #include "btMiniSDF.h"
 #include "LinearMath/btAabbUtil2.h"
 
-struct btSdfCollisionShapeInternalData
+ATTRIBUTE_ALIGNED16(struct) btSdfCollisionShapeInternalData
 {
 	btVector3 m_localScaling;
 	btScalar m_margin;
@@ -14,6 +14,7 @@ struct btSdfCollisionShapeInternalData
 	{
 
 	}
+	BT_DECLARE_ALIGNED_ALLOCATOR();
 };
 
 bool btSdfCollisionShape::initializeSDF(const char* sdfData, int sizeInBytes)
