@@ -1026,7 +1026,7 @@ void btKinematicCharacterController::setUpVector(const btVector3& up, bool skipG
 
 	if(!m_ghostObject || skipGHost) return;
 	btQuaternion rot = getRotation(m_up, u);
-
+	printf("Transforming player physbase with: %.2f %.2f %.2f %.2f\n", rot.x(), rot.y(), rot.z(), rot.w());
 	//set orientation with new up
 	btTransform xform;
 	xform = m_ghostObject->getWorldTransform();
